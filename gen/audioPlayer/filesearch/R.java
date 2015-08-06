@@ -19,24 +19,26 @@ public final class R {
         public static final int ya=0x7f020005;
     }
     public static final class id {
-        public static final int EditText=0x7f070005;
+        public static final int EditText=0x7f070006;
         public static final int button1=0x7f070004;
         public static final int button2=0x7f070003;
         public static final int button3=0x7f070002;
-        public static final int imageView=0x7f070007;
-        public static final int listView=0x7f070006;
-        public static final int menu_quit=0x7f07000b;
+        public static final int fragmentcontent=0x7f070005;
+        public static final int imageView=0x7f070008;
+        public static final int listView=0x7f070007;
+        public static final int menu_quit=0x7f07000c;
         public static final int textView1=0x7f070000;
         public static final int textView2=0x7f070001;
-        public static final int tvMusic=0x7f070008;
-        public static final int tvPah=0x7f070009;
-        public static final int tvSinger=0x7f07000a;
+        public static final int tvMusic=0x7f070009;
+        public static final int tvPah=0x7f07000a;
+        public static final int tvSinger=0x7f07000b;
     }
     public static final class layout {
         public static final int activity_audioplayer=0x7f030000;
         public static final int activity_main=0x7f030001;
-        public static final int item_music=0x7f030002;
-        public static final int view_searchedit=0x7f030003;
+        public static final int fragment_listview=0x7f030002;
+        public static final int item_music=0x7f030003;
+        public static final int view_searchedit=0x7f030004;
     }
     public static final class menu {
         public static final int menu_quit=0x7f060000;
