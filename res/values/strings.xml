@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">爱我音乐</string>
+    <string name="hello_world">Hello world!</string>
+      <string name="search">搜索</string>
+      <string name="searchTips"> 输入歌曲名</string>
+        <string name="foward"> 前一个</string>
+          <string name="begin">开始</string>
+            <string name="pause">暂停</string>
+            <string name="next"> 下一个</string>
+            <string name="AudioPalyer">AudioPalyer</string>
+</resources>

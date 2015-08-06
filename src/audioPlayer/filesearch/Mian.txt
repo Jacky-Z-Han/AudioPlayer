@@ -1,0 +1,59 @@
+package audioPlayer.filesearch;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import AudioPalyer.filesearch.R;
+import AudioPalyer.filesearch.R.layout;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+	private final Uri tableStr=MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+	private final String orderStr=MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
+
+ TextView tv;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		tv=(TextView)findViewById(R.id.fileList);
+		
+		control();
+	}
+	private void control() {
+		ContentResolver cr=getContentResolver();
+		Cursor cursor=cr.query(tableStr, null, null, null, orderStr);
+		int columnSize=cursor.getColumnCount();
+		String[] column=cursor.getColumnNames();
+		
+		System.out.println("count"+cursor.getCount()+":columnSize="+columnSize+":"+Arrays.toString(column));
+		String str="列名\t\t内容\n";
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+		for(int i=0;i<cursor.getColumnCount();i++){
+			str+=cursor.getColumnName(i)+"\t\t"+cursor.getString(i);
+		}
+		System.out.println(str);
+		}
+		/*if(cursor.getCount()>0){
+			cursor.moveToFirst();
+		//歌曲名
+		String displayName=cursor.getString(2);
+		//文件路径
+		String path=cursor.getString(3);
+		//歌手
+		String composer=cursor.getString(cursor.getColumnIndex("composer"));
+		System.out.println("歌曲名："+displayName+";文件路径:"+path+"；歌手："+composer);
+		}*/
+	}
+}
