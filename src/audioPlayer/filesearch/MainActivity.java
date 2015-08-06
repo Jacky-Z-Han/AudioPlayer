@@ -2,38 +2,35 @@ package audioPlayer.filesearch;
 
 
 
-import java.io.Serializable;
 
 import audioPlayer.filesearch.R;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class MainActivity extends Activity {
 	//private final Uri tableStr=MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 	//private final String orderStr=MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 	
-
+private static MediaPlayer mediaPlayer=null;
 
  Fragment fragmentListView;
+ Fragment fragmentPalyer;
  ViewGroup layout_fragment;
- 
+ public static MediaPlayer getMediaPlayerInstance(){
+	 if(mediaPlayer==null){
+		 mediaPlayer=new MediaPlayer();
+	 }
+	 return mediaPlayer;
+ }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i("MainActivity.onCreate()", "in");
@@ -41,7 +38,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 	
 		fragmentListView=new ListViewFragment();
-		
+		fragmentPalyer=new AudioPalyer();
 		layout_fragment=(ViewGroup)findViewById(R.id.fragmentcontent);
 		
 		control();
@@ -66,5 +63,18 @@ public class MainActivity extends Activity {
 		Log.i("MainActivity.onResume()", "in");
 		super.onResume();
 	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	   getMenuInflater().inflate(R.menu.menu_quit, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
 	
+			
+			this.control();		
+			
+		
+		return super.onOptionsItemSelected(item);
+	}
 }

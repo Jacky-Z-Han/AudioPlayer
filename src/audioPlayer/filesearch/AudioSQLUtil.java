@@ -50,28 +50,27 @@ public  ArrayList<Music> getMusicListMethod(){
 		return musicList;
 	}
 }
-public   Cursor getAudio(){//���⻷������˵�ֻ����󻷾�����
+public   Cursor getAudio(){
 	ContentResolver cr=context.getContentResolver();
 	String[] strLie={"title",MediaStore.Audio.Media.DATA,"artist"};
 	Cursor cursor=cr.query(tableStr, strLie, null, null, orderStr);
-	Cursor curso2r=cr.query(tableStr, null, null, null, orderStr);
 	musicCursor=cursor;
 	return musicCursor;
 }
-public void printCursor(Cursor cursor){
-	int countN=cursor.getCount();
+public String printCursor(Cursor cursor){
+	String str="";
 	int columnNum=cursor.getColumnCount();
 	cursor.moveToFirst();
 	System.out.println(columnNum+"");
 	Log.i(tag+":columnNum", columnNum+"");
 	if(!cursor.isAfterLast()){
-		String str="";
-		String str2="";
+		
 		for(int i=0;i<columnNum;i++){
 			str+=i+":"+cursor.getColumnName(i)+";";
 			
 		}
 	}
+	return str;
 }
 public Cursor getMusicCursor() {
 	return musicCursor;

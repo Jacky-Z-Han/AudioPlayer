@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,13 +18,12 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class ListViewFragment extends Fragment {
 	 EditText tv;
 	 ListView lv;
-	 //AudioSQLUtil au;
+	 AudioSQLUtil au;
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
@@ -82,12 +82,12 @@ public class ListViewFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-//		au=AudioSQLUtil.getInstance(getActivity().getApplicationContext());
-//		new Thread(au).start();
+		au=AudioSQLUtil.getInstance(getActivity().getApplicationContext());
+		new Thread(au).start();
        Log.i("ListViewFragment.onCreateView", "in");
-		View view=inflater.inflate(R.layout.fragment_listview, container);
+		View view=inflater.inflate(R.layout.fragment_listview, container,false);
 		tv=(EditText)view.findViewById(R.id.EditText);
-	/*	lv=(ListView)view.findViewById(R.id.listView);
+		lv=(ListView)view.findViewById(R.id.listView);
 		MusicAdapter adapter=new MusicAdapter(getActivity().getApplicationContext());
 		   lv.setAdapter(adapter);
 		  
@@ -98,17 +98,29 @@ public class ListViewFragment extends Fragment {
 			   TextView tv=(TextView)view.findViewById(R.id.tvPah);
 			   TextView tv2=(TextView)view.findViewById(R.id.tvMusic);
 			   TextView tv3=(TextView)view.findViewById(R.id.tvSinger);
-			//   MusicAdapter adapter=(MusicAdapter)lv.getAdapter();
-			   Intent intent=new Intent(container.getContext(),AudioPalyer.class);
+			   Activity mainAt=ListViewFragment.this.getActivity();
+			   FragmentManager fm=mainAt.getFragmentManager();
+			   FragmentTransaction ft=fm.beginTransaction();
+			   AudioPalyer f2=new AudioPalyer();
+			   //这个替代替代谁
+			   ft.replace(R.id.fragmentcontent	, f2);
+			   ft.commit();
+			   Music music=new Music();
+			   music.setMusic(tv2.getText().toString());
+			   music.setPath(tv.getText().toString());
+			   music.setSinger(tv3.getText().toString());
+			   
+			   f2.getData(music,position);
+			  /* Intent intent=new Intent(container.getContext(),AudioPalyer.class);
 			   intent.putExtra("path", tv.getText());
 			   intent.putExtra("music",tv2.getText());
 			   intent.putExtra("singer", tv3.getText());
 			   intent.putExtra("position", position);
-//			  MainActivity.this.startActivity(intent);
+			  MainActivity.this.startActivity(intent);*/
 //			   Toast.makeText(container.getContext(), tv.getText(), Toast.LENGTH_LONG).show();
-			//   MediaPlayer mediaPlayer=new MediaPlayer();	 
+			//   	 
 			}
-		});	   */
+		});	   
 		   Log.i("ListViewFragment.onCreateView", "out");
 		return view;
 	}

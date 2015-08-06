@@ -3,43 +3,42 @@ package audioPlayer.filesearch;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.Fragment;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AudioPalyer extends Activity {
+public class AudioPalyer extends Fragment {
 	private final String begin="开始";
 	private final String pause="暂停";
 	 ArrayList<Music> musicList=null;
 	int position=-1;
 	Menu menuQuit;
-	String path,music	,singer;
+	//String path,music	,singer;
 Button butBefore,butBegin,butNext;
 TextView songTv,artistTv;
-MediaPlayer mp=new MediaPlayer();
-AudioSQLUtil audioSQLUtil;//��MainActivity�ж�����ͬһ���ˣ���Ҫ����ģʽ
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {	
-		audioSQLUtil=AudioSQLUtil.getInstance(this);
-		if(audioSQLUtil.getMusicList().size()==0)//�Դ�Ϊ�����ж���������һ��������
-		 new Thread(audioSQLUtil).start();//�߳�
-		setContentView(R.layout.activity_audioplayer);
-		super.onCreate(savedInstanceState);
-		
+MediaPlayer mp=MainActivity.getMediaPlayerInstance();
+AudioSQLUtil audioSQLUtil;//
+Music rtMusic;
+
+	
+	 void onCreate() {	
+		audioSQLUtil=AudioSQLUtil.getInstance(this.getActivity().getApplicationContext());
+		if(audioSQLUtil.getMusicList().size()==0)//
+		 new Thread(audioSQLUtil).start();
 		musicList=audioSQLUtil.getMusicList();
 		int i=0;
-	    while(musicList==null){	//�߳�Э��
+	    while(musicList==null){	
 	    	Log.i("AudioPlayer", i+++"");
 	    	try {
 				Thread.sleep(100);
@@ -49,21 +48,10 @@ AudioSQLUtil audioSQLUtil;//��MainActivity�ж�����ͬһ����
 			}
 	    	musicList=audioSQLUtil.getMusicList();
 	       }
-	    menuQuit=(Menu)findViewById(R.menu.menu_quit);
-		butBefore=(Button)findViewById(R.id.button1);
-		butBegin=(Button)findViewById(R.id.button2);
-		butNext=(Button)findViewById(R.id.button3);
-		songTv=(TextView)findViewById(R.id.textView1);
-		artistTv=(TextView)findViewById(R.id.textView2);
-		Intent getIntent=getIntent();
-		path=getIntent.getStringExtra("path");
-		music=getIntent.getStringExtra("music");
-		singer=getIntent.getStringExtra("singer");
-		//adapter=(MusicAdapter)getIntent.getSerializableExtra("adapter");
-		position=getIntent.getIntExtra("position", -1);
-		songTv.setText(music);
-		artistTv.setText(singer);
-		play(path);
+	   //需要替代，数据传递
+		songTv.setText(rtMusic.getMusic());
+		artistTv.setText(rtMusic.getSinger());
+		play(rtMusic.getPath());
 		control();
 		playerControl();
 	} 
@@ -103,7 +91,7 @@ AudioSQLUtil audioSQLUtil;//��MainActivity�ж�����ͬһ����
 	}
 	public void playNext(){
 		
-		if(position==-1) Toast.makeText(this, "错误Position", Toast.LENGTH_SHORT).show();
+		if(position==-1) Toast.makeText(this.getActivity().getApplicationContext(), "错误Position", Toast.LENGTH_SHORT).show();
 		else if(position>=musicList.size()-1){
 		position=0;
 		Music music=musicList.get(position);
@@ -122,7 +110,7 @@ AudioSQLUtil audioSQLUtil;//��MainActivity�ж�����ͬһ����
 	}
 	public void playForward(){
 	
-		if(position==-1) Toast.makeText(this, "错误Position", Toast.LENGTH_SHORT).show();
+		if(position==-1) Toast.makeText(this.getActivity().getApplicationContext(), "错误Position", Toast.LENGTH_SHORT).show();
 		else if(position<=0){
 			position=musicList.size()-1;
 			Music music=musicList.get(position);
@@ -158,50 +146,27 @@ AudioSQLUtil audioSQLUtil;//��MainActivity�ж�����ͬһ����
 		e.printStackTrace();
 	}
    }
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view=inflater.inflate(R.layout.activity_audioplayer, container,false);
+				 menuQuit=(Menu)view.findViewById(R.menu.menu_quit);
+		butBefore=(Button)view.findViewById(R.id.button1);
+		butBegin=(Button)view.findViewById(R.id.button2);
+		butNext=(Button)view.findViewById(R.id.button3);
+		songTv=(TextView)view.findViewById(R.id.textView1);
+		artistTv=(TextView)view.findViewById(R.id.textView2);
+		return view ;
 	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	protected void onDestroy() {
-		  if (mp != null) {
-	            mp.release();
-	            mp = null;
-		  }
-		super.onDestroy();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	   getMenuInflater().inflate(R.menu.menu_quit, menu);
-		return true;
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	//回调方法喽
+  public void  getData(Music music,int position){
+	   this.rtMusic=music;
+	   this.position=position;
 	
-			mp.stop();
-			mp.release();
-			this.onPause();
-			this.finish();
-			Intent intent=new Intent(this,MainActivity.class);
-			this.startActivity(intent);		
-			
-		
-		return super.onOptionsItemSelected(item);
-	}
-
+   }
+@Override
+public void onActivityCreated(Bundle savedInstanceState) {
+	// TODO Auto-generated method stub
+	super.onActivityCreated(savedInstanceState);
+	onCreate();
+}
 }
