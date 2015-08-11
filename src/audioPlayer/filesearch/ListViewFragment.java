@@ -1,6 +1,7 @@
 package audioPlayer.filesearch;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,6 +10,8 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,8 @@ public class ListViewFragment extends Fragment {
 	 EditText tv;
 	 ListView lv;
 	 AudioSQLUtil au;
+	 ArrayList<Music> musicList;
+	 
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
@@ -56,34 +61,11 @@ public class ListViewFragment extends Fragment {
 	}
 
 	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	public void onStop() {
-		// TODO Auto-generated method stub
-		super.onStop();
-	}
-
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
-
-	@Override
-	public void onDetach() {
-		// TODO Auto-generated method stub
-		super.onDetach();
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		au=AudioSQLUtil.getInstance(getActivity().getApplicationContext());
 		new Thread(au).start();
+		musicList=au.getMusicList();
        Log.i("ListViewFragment.onCreateView", "in");
 		View view=inflater.inflate(R.layout.fragment_listview, container,false);
 		tv=(EditText)view.findViewById(R.id.EditText);
@@ -121,50 +103,75 @@ public class ListViewFragment extends Fragment {
 			//   	 
 			}
 		});	   
+		   //如果输入框为null，就像没有执行事件之前一样
+		   tv.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			String str=s.toString();
+			Log.i("study","s:start:before:count="+s.toString()+":"+start+":"+before+":"+count);
+			ArrayList<Music> tempList=new ArrayList<Music>();
+			for(Music music: musicList){
+				if(music.getMusic().contains(str)||music.getSinger().contains(str))
+					tempList.add(music);
+			}
+			MusicAdapter tempAdapter=new MusicAdapter();
+			tempAdapter.setAdapterMusiclist(tempList);
+			ListViewFragment.this.lv.setAdapter(tempAdapter);
+			//重新添加ListView adapter
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub			
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+			
+				
+			}
+		});
 		   Log.i("ListViewFragment.onCreateView", "out");
 		return view;
 	}
 	 class MusicAdapter extends BaseAdapter implements Serializable{
-		 AudioSQLUtil au=AudioSQLUtil.getInstance(getActivity());//
-			private static final long serialVersionUID = 1L;
-		//	private static final long id= 1L;
+		 
+		   private ArrayList<Music> adapterMusicList=AudioSQLUtil.getMusicList();
+			private static final long serialVersionUID = 1L;//不知道有啥用
 			private Context context;	
-	       Cursor cursor=au.getMusicCursor();
+	    //   Cursor cursor=AudioSQLUtil.getMusicCursor();
+	    
+	       
 	       public MusicAdapter(){
+	    	   if(adapterMusicList==null){
 	    	   new Thread(au).start();
-	    	   while(cursor==null){
+	    	   while(adapterMusicList==null){
 	    	    	try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-	    	    	cursor=au.getMusicCursor();
+	    	    	adapterMusicList=AudioSQLUtil.getMusicList();
 	    	       }
+	    	   }
 	       }
 	      
 	       public MusicAdapter(Context context){
-	    	   new Thread(au).start();
-	    	   this.context=context;
-	       while(cursor==null){
-	       	try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	       	cursor=au.getMusicCursor();
-	          }}
+	    	  this();
+	    	   this.context=context;	     	    
+	          }
 			@Override
 			public int getCount() {	
-				return cursor.getCount();
+				return adapterMusicList.size();
 			}
 
 			@Override
 			public Object getItem(int position) {
-			cursor.moveToFirst();
-			cursor.move(position);
-				return cursor;
+			
+				return adapterMusicList.get(position);
 			}
 
 			@Override
@@ -182,23 +189,27 @@ public class ListViewFragment extends Fragment {
 			    TextView tvMusic=(TextView)convertView.findViewById(R.id.tvMusic);
 			    TextView tvPath=(TextView)convertView.findViewById(R.id.tvPah);
 			    TextView tvSinger=(TextView)convertView.findViewById(R.id.tvSinger);
-			    if(position<cursor.getCount()){
+			    Music music=null;
+			    if(position<getCount()){
 			    	Log.i("Adapter.getView", "position="+position);
-			    	cursor.moveToFirst();
-			    cursor.move(position);
+			  music=(Music) getItem(position);
 			    }
-			    tvMusic.setText(cursor.getString(0));
-			    tvPath.setText(cursor.getString(1));
-			    tvSinger.setText(cursor.getString(2));
+			    if(music!=null){
+			    tvMusic.setText(music.getMusic());
+			    tvPath.setText(music.getPath());
+			    tvSinger.setText(music.getSinger());
+			    }
 			    convertView.setTag(position);
 				return convertView;
 			    
 			}
-			public Cursor getCursor() {
-				return cursor;
+		
+			public ArrayList<Music> getAdapterMusiclist() {
+				return adapterMusicList;
 			}
-			public void setCursor(Cursor cursor) {
-				this.cursor = cursor;
+
+			public void setAdapterMusiclist(ArrayList<Music> adapterMuisclist) {
+				this.adapterMusicList = adapterMuisclist;
 			}
 			
 		}

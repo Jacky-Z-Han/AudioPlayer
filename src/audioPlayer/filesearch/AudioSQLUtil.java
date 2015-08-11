@@ -14,9 +14,9 @@ import android.util.Log;
 
 public class AudioSQLUtil implements Runnable {
 	private static final String tag="audioPlayer.filesearch/AudioSQLUtil";
-	private  Cursor musicCursor=null;
+	private static  Cursor musicCursor=null;
    private static	Context context=null;
-    ArrayList<Music> musicList=new ArrayList<Music>();
+ private static   ArrayList<Music> musicList=new ArrayList<Music>();
     private static AudioSQLUtil audioSQLUtil=null;
     public static AudioSQLUtil getInstance(Context context){
     	if(audioSQLUtil==null){
@@ -36,7 +36,7 @@ public void run(){
 	getMusicListMethod();
 }
 
-public  ArrayList<Music> getMusicListMethod(){
+public  static ArrayList<Music> getMusicListMethod(){
 	Log.i("AudioSQLUtil",musicCursor.getCount()+"");
 	if(musicCursor==null)return null;
 	else{
@@ -50,7 +50,7 @@ public  ArrayList<Music> getMusicListMethod(){
 		return musicList;
 	}
 }
-public   Cursor getAudio(){
+public static  Cursor getAudio(){
 	ContentResolver cr=context.getContentResolver();
 	String[] strLie={"title",MediaStore.Audio.Media.DATA,"artist"};
 	Cursor cursor=cr.query(tableStr, strLie, null, null, orderStr);
@@ -72,10 +72,10 @@ public String printCursor(Cursor cursor){
 	}
 	return str;
 }
-public Cursor getMusicCursor() {
+public static Cursor getMusicCursor() {
 	return musicCursor;
 }
-public ArrayList<Music> getMusicList() {
+public static ArrayList<Music> getMusicList() {
 	return musicList;
 }
 }
