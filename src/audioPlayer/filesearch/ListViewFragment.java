@@ -1,13 +1,29 @@
 package audioPlayer.filesearch;
 
+import java.io.BufferedReader;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.SimpleFormatter;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -28,39 +44,8 @@ public class ListViewFragment extends Fragment {
 	 ListView lv;
 	 AudioSQLUtil au;
 	 ArrayList<Music> musicList;
+	 String tag="ListViewFragment";
 	 
-	@Override
-	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
-		super.onAttach(activity);
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		Log.i("ListViewFragment.onCreate()", "in");
-		super.onCreate(savedInstanceState);
-	}
-
-	
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		Log.i("ListViewFragment.onActvtiyCreated()", "in");
-		super.onActivityCreated(savedInstanceState);
-	}
-
-	@Override
-	public void onStart() {
-		Log.i("ListViewFragment.onStart()", "in");
-		super.onStart();
-	}
-
-	@Override
-	public void onResume() {
-		Log.i("ListViewFragment.onResume()", "in");
-		super.onResume();
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		au=AudioSQLUtil.getInstance(getActivity().getApplicationContext());
@@ -120,21 +105,101 @@ public class ListViewFragment extends Fragment {
 			ListViewFragment.this.lv.setAdapter(tempAdapter);
 			//重新添加ListView adapter
 			}
-			
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub			
 			}
-			
 			@Override
 			public void afterTextChanged(Editable s) {
 			
 				
 			}
 		});
-		   Log.i("ListViewFragment.onCreateView", "out");
+		 //  Log.i("ListViewFragment.onCreateView", "out");
+		   show(1);
+		   save(1);
+		   show(1);
 		return view;
+	}
+	public void show(){
+		SharedPreferences sharedPrefer=this.getActivity().getSharedPreferences("save", Activity.MODE_PRIVATE);
+		Set<String> set=new HashSet<String>();
+		Map<String,?> map=sharedPrefer.getAll();
+		set=(Set<String>)map.get("name");
+		Iterator iterator=set.iterator();
+		while(iterator.hasNext()){
+			Log.i(tag+"Show",(String)iterator.next());	
+		}
+		Log.i(tag+"Show", map.get("time").toString());
+	}
+	public void save(){
+			SharedPreferences sharedPrefer=this.getActivity().getSharedPreferences("save", Activity.MODE_PRIVATE);
+			SharedPreferences.Editor editor=sharedPrefer.edit();
+			SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date=new Date();
+			String dateStr=simpleDateFormat.format(date);
+			Set<String> set=new HashSet<String>();
+			set.add("hzj");set.add("han");set.add("zhen");set.add("jiang");
+			editor.putStringSet("name", set);
+			editor.putString("time", dateStr);
+			editor.commit();
+			Map<String,?> map=sharedPrefer.getAll();
+			set=(Set<String>)map.get("name");
+			Iterator iterator=set.iterator();
+			while(iterator.hasNext())
+				Log.i(tag+"save",(String)iterator.next());
+	}
+	public void save(int i){
+		FileOutputStream fos=null;
+		try {
+			fos=this.getActivity().openFileOutput("hzj", Activity.MODE_PRIVATE);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Log.i(tag, "no file");
+		}
+		FileDescriptor fd=null;
+		try {
+	    fd= 	fos.getFD();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		FileWriter fw=new FileWriter(fd);
+		try {
+			String str="从根本解决问题，不要着急多学类，类是对象的代表\n题，不要着急多学类，类是对象的代表";
+			fw.write(str);
+			fw.flush();
+			fw.close();
+			fos.close();
+			Log.i(tag+"save(int),str=",str);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+	}
+	public void show(int i){
+		try {
+			FileInputStream fis=this.getActivity().openFileInput("hzj");
+			FileDescriptor fd=fis.getFD();
+		
+			FileReader fr=new FileReader(fd);
+			BufferedReader bf=new BufferedReader(fr);
+			String str="";
+			Log.i(tag+"show(int),str=", str);
+		while(bf.ready()){
+			str+=bf.readLine();
+		}
+			Log.i(tag+"show(int),str=", str);
+			fis.close();
+			fr.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	 class MusicAdapter extends BaseAdapter implements Serializable{
 		 
@@ -191,7 +256,6 @@ public class ListViewFragment extends Fragment {
 			    TextView tvSinger=(TextView)convertView.findViewById(R.id.tvSinger);
 			    Music music=null;
 			    if(position<getCount()){
-			    	Log.i("Adapter.getView", "position="+position);
 			  music=(Music) getItem(position);
 			    }
 			    if(music!=null){
