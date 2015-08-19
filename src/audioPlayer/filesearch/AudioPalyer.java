@@ -2,6 +2,8 @@ package audioPlayer.filesearch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Fragment;
 import android.media.AudioManager;
@@ -34,7 +36,28 @@ public class AudioPalyer extends Fragment {
 	MediaPlayer mp = MainActivity.getMediaPlayerInstance();
 	AudioSQLUtil audioSQLUtil;//
 	Music rtMusic;
+	Timer timer=new Timer(true);
+   TimerTask timerTask=new TimerTask(){
 
+	@Override
+	public void run() {
+		if(mp!=null){
+			
+			AudioPalyer.this.getActivity().runOnUiThread(new Runnable() {
+				
+				@Override
+				public void run() {
+					int position=mp.getCurrentPosition();
+					seekBar.setProgress(position);
+					timeTv.setText(position/1000/60+":"+position/1000%60);
+
+				}
+			});
+		}
+		
+	}
+	   
+   };
 	void onCreate() {//上一个版本方法复用，作为初始化一部分
 		audioSQLUtil = AudioSQLUtil.getInstance(this.getActivity()
 				.getApplicationContext());
@@ -97,6 +120,7 @@ public class AudioPalyer extends Fragment {
 	public void playPause() {
 		mp.pause();
 		butBegin.setText(begin);
+		timer.cancel();
 	}
 
 	public void playNext() {
@@ -141,6 +165,7 @@ public class AudioPalyer extends Fragment {
 
 		mp.start();
 		butBegin.setText(pause);
+		timer.scheduleAtFixedRate(timerTask, 0, 100);
 	}
 
 	public void play(String path) {
@@ -151,6 +176,11 @@ public class AudioPalyer extends Fragment {
 			mp.prepare();
 			mp.start();
 			butBegin.setText(pause);
+			int duration=mp.getDuration();
+			seekBar.setMax(duration);
+			
+			endTimeTv.setText(duration/1000/60+":"+duration/1000%60);//时间设置
+			timer.scheduleAtFixedRate(timerTask, 0, 100);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
