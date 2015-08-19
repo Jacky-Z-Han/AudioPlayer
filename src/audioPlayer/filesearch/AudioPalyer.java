@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,15 +24,18 @@ public class AudioPalyer extends Fragment {
 	private final String pause = "暂停";
 	ArrayList<Music> musicList = null;
 	int position = -1;
+	int currentPostion=0;//当前播放时间
+	int duration=0;//歌曲总时间
 	Menu menuQuit;
 	// String path,music ,singer;
 	Button butBefore, butBegin, butNext;
-	TextView songTv, artistTv;
+	TextView songTv, artistTv,timeTv,endTimeTv;//歌曲名，歌手，播放时间，结束时间
+	SeekBar seekBar;//进度条，可拖动
 	MediaPlayer mp = MainActivity.getMediaPlayerInstance();
 	AudioSQLUtil audioSQLUtil;//
 	Music rtMusic;
 
-	void onCreate() {
+	void onCreate() {//上一个版本方法复用，作为初始化一部分
 		audioSQLUtil = AudioSQLUtil.getInstance(this.getActivity()
 				.getApplicationContext());
 		if (audioSQLUtil.getMusicList().size() == 0)//
@@ -172,6 +176,9 @@ public class AudioPalyer extends Fragment {
 		butNext = (Button) view.findViewById(R.id.button3);
 		songTv = (TextView) view.findViewById(R.id.textView1);
 		artistTv = (TextView) view.findViewById(R.id.textView2);
+		timeTv=(TextView)view.findViewById(R.id.textView3);
+		endTimeTv=(TextView)view.findViewById(R.id.textView4);
+		seekBar=(SeekBar)view.findViewById(R.id.seekBar1);
 		return view;
 	}
 

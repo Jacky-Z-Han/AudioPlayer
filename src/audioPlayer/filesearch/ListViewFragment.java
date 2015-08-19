@@ -38,7 +38,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
-
+//音乐列表碎片，数据ArrayList
 public class ListViewFragment extends Fragment {
 	 EditText tv;
 	 ListView lv;

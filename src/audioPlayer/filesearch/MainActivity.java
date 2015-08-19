@@ -11,26 +11,27 @@ import android.app.FragmentTransaction;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
-
+//音乐播放器主类
 public class MainActivity extends Activity {
 	//private final Uri tableStr=MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 	//private final String orderStr=MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
 	
-private static MediaPlayer mediaPlayer=null;
-
- Fragment fragmentListView;
- Fragment fragmentPalyer;
- ViewGroup layout_fragment;
- public static MediaPlayer getMediaPlayerInstance(){
+private static MediaPlayer mediaPlayer=null;//单例模式MediaPlayer
+public static MediaPlayer getMediaPlayerInstance(){
 	 if(mediaPlayer==null){
 		 mediaPlayer=new MediaPlayer();
 	 }
 	 return mediaPlayer;
- }
+}
+ Fragment fragmentListView;//播放列表和播放Fragment界面
+ Fragment fragmentPalyer;
+ ViewGroup layout_fragment;//替换Fragment的容器
+ 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i("MainActivity.onCreate()", "in");
@@ -43,6 +44,7 @@ private static MediaPlayer mediaPlayer=null;
 		
 		control();
 	}
+	//初始化逻辑之Fragment初始化
 	private void control() {
     //fagement初始化
 		FragmentManager fm=getFragmentManager();
@@ -53,28 +55,40 @@ private static MediaPlayer mediaPlayer=null;
 		//其它
 
 	}
+	
 	@Override
-	protected void onStart() {
-	Log.i("MainActivity.onstart", "in");
-		super.onStart();
-	}
-	@Override
-	protected void onResume() {
-		Log.i("MainActivity.onResume()", "in");
-		super.onResume();
-	}
-	@Override
+	//加载菜单项<Item>
 	public boolean onCreateOptionsMenu(Menu menu) {
 	   getMenuInflater().inflate(R.menu.menu_quit, menu);
 		return true;
 	}
 	@Override
+	//只有一个菜单项回退到播放列表界面
 	public boolean onOptionsItemSelected(MenuItem item) {
-	
-			
 			this.control();		
-			
-		
 		return super.onOptionsItemSelected(item);
+	}
+	@Override
+	//测试修改回退事件，先onKeyDown后onBackPressed
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		Log.i("onBack", "backPressed");
+	}
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i("onKeyDown", "in");
+		switch(keyCode){
+		case KeyEvent.KEYCODE_BACK:
+			Log.i("onKeyDown", "back");
+			break;
+		case KeyEvent.KEYCODE_MENU:
+			Log.i("onkeyDown", "menu");
+			break;
+		case KeyEvent.KEYCODE_HOME:
+			Log.i("onkeyDown", "home");
+			default:
+			break;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
