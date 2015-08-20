@@ -39,7 +39,7 @@ public static MediaPlayer getMediaPlayerInstance(){
 		setContentView(R.layout.activity_main);
 	
 		fragmentListView=new ListViewFragment();
-		fragmentPalyer=new AudioPalyer();
+		fragmentPalyer=new AudioPlayer();
 		layout_fragment=(ViewGroup)findViewById(R.id.fragmentcontent);
 		
 		control();

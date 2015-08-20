@@ -68,7 +68,7 @@ public class ListViewFragment extends Fragment {
 			   Activity mainAt=ListViewFragment.this.getActivity();
 			   FragmentManager fm=mainAt.getFragmentManager();
 			   FragmentTransaction ft=fm.beginTransaction();
-			   AudioPalyer f2=new AudioPalyer();
+			   AudioPlayer f2=new AudioPlayer();
 			   //这个替代替代谁
 			   ft.replace(R.id.fragmentcontent	, f2);
 			   ft.commit();

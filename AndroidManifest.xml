@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AudioPalyer"
+        <activity android:name=".AudioPlayer"
             android:label="@string/AudioPalyer"></activity>
     </application>
     <application android:name=".ContextUtil"></application>

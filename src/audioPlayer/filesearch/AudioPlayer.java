@@ -21,7 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AudioPalyer extends Fragment {
+public class AudioPlayer extends Fragment {
 	private final String begin = "开始";
 	private final String pause = "暂停";
 	ArrayList<Music> musicList = null;
@@ -37,14 +37,12 @@ public class AudioPalyer extends Fragment {
 	AudioSQLUtil audioSQLUtil;//
 	Music rtMusic;
 	Timer timer=new Timer(true);
-   TimerTask timerTask=new TimerTask(){
-
+   TimerTask timerTask;
+ class SeekBarTimerTask extends TimerTask{
 	@Override
 	public void run() {
-		if(mp!=null){
-			
-			AudioPalyer.this.getActivity().runOnUiThread(new Runnable() {
-				
+		if(mp!=null){		
+			AudioPlayer.this.getActivity().runOnUiThread(new Runnable() {			
 				@Override
 				public void run() {
 					int position=mp.getCurrentPosition();
@@ -120,7 +118,7 @@ public class AudioPalyer extends Fragment {
 	public void playPause() {
 		mp.pause();
 		butBegin.setText(begin);
-		timer.cancel();
+		timerTask.cancel();
 	}
 
 	public void playNext() {
@@ -165,21 +163,25 @@ public class AudioPalyer extends Fragment {
 
 		mp.start();
 		butBegin.setText(pause);
+		timerTask=new SeekBarTimerTask();
 		timer.scheduleAtFixedRate(timerTask, 0, 100);
 	}
 
 	public void play(String path) {
 		mp.reset();
 		try {
+			//播放器加载歌曲，开始播放
 			mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mp.setDataSource(path);
 			mp.prepare();
 			mp.start();
+			//便签变化，和seekBar变化&seekBarTimerTask新建启动启动
 			butBegin.setText(pause);
 			int duration=mp.getDuration();
-			seekBar.setMax(duration);
-			
+			seekBar.setMax(duration);	
+			seekBar.setProgress(0);
 			endTimeTv.setText(duration/1000/60+":"+duration/1000%60);//时间设置
+				timerTask=new SeekBarTimerTask();
 			timer.scheduleAtFixedRate(timerTask, 0, 100);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
