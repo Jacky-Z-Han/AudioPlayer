@@ -18,10 +18,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class AudioPlayer extends Fragment {
+	public AudioPlayer(){}
 	private final String begin = "开始";
 	private final String pause = "暂停";
 	ArrayList<Music> musicList = null;
@@ -38,6 +40,7 @@ public class AudioPlayer extends Fragment {
 	Music rtMusic;
 	Timer timer=new Timer(true);
    TimerTask timerTask;
+   //timerTask要cancel之后必须重建
  class SeekBarTimerTask extends TimerTask{
 	@Override
 	public void run() {
@@ -91,6 +94,29 @@ public class AudioPlayer extends Fragment {
 	}
 
 	private void control() {
+		seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {		
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+		
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				if(fromUser){
+				int position=seekBar.getProgress();
+				String time=getFromateTime(position);
+				timeTv.setText(time);
+				seekBar.setProgress(progress);
+				mp.seekTo(progress);
+				}
+				
+			}
+		});
 		butBegin.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -115,6 +141,26 @@ public class AudioPlayer extends Fragment {
 		});
 	}
 
+	protected String getFromateTime(int position2) {
+		String prefix0="0";
+		String prefix00="00";
+		String result="";
+		int min=position2/1000/60;
+		int second=position2/1000%60;
+		if(min<10){
+			if(second<10)
+				result=prefix0+min+":"+prefix0+second;
+			else if(second>=10)
+				result=prefix0+min+":"+second;
+		}else{
+			if(second<10)
+				result=prefix00+min+":"+prefix0+second;
+			else if(second>=10)
+				result=prefix00+min+":"+second;
+		}
+		return result;
+	}
+
 	public void playPause() {
 		mp.pause();
 		butBegin.setText(begin);
@@ -122,7 +168,6 @@ public class AudioPlayer extends Fragment {
 	}
 
 	public void playNext() {
-
 		if (position == -1)
 			Toast.makeText(this.getActivity().getApplicationContext(),
 					"错误Position", Toast.LENGTH_SHORT).show();
